@@ -7,7 +7,7 @@ BASE_URL = "http://127.0.0.1:8000"
 def adicionar_aluno(nome, nota):
     resp = httpx.post(
         f"{BASE_URL}/alunos",
-        json = {"nome":nome,"nota":nota}
+        json={"nome": nome, "nota": nota}
     )
     print("Adicionando...\n", resp.json())
     return resp
