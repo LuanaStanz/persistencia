@@ -8,22 +8,17 @@ with open("jogadas.html", encoding="utf-8") as f:
 #calcular quandas vezes jogador 1 venceu o pedra papel tesoura
 table = soup.find("table")
 jogadas = table.find_all("td")
-jogadas = [td.get_text().split("\n") for td in jogadas ]
-print(jogadas)
+j1 = table.find_all("td",{"class":"j1"})
+j2 = table.find_all("td",{"class":"j2"})
+j1 = [td.get_text() for td in j1]
+j2 = [td.get_text() for td in j2]
+
 contador = 0
-index_list = []
-for i in range(len(jogadas)-1):
-    jogada1 = jogadas[i]
-    jogada2 = jogadas[i+1]
+for i in range(len(j1)):
+    if (j1[i] == "pedra" and j2[i] == "tesoura") or (j1[i] == "papel" and j2[i] == "pedra") or (j1[i] == "tesoura" and j2[i] == "papel"):
+        contador += 1
     
-    print(jogada1, jogada2)
-    i += 2
+print(j1)
+print(j2)
 
-    #if (jogador1 == "Pedra" and jogador2 == "Tesoura") or
-#for td in jogadas:
-    #jogadas += td.get_text().split("\n")
-
-
-    #if td.attrs.get("class") and td.attrs.get("class")[0] == "nota":
-    #    contador += 1
-    #    media += float(td.string)
+print(f"Jogador 1 venceu {contador} vezes")
