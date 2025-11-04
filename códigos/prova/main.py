@@ -3,6 +3,10 @@ from pydantic import BaseModel
 import pandas as pd
 #uvicorn main:app --reload
 
+class Aluno(BaseModel):
+    nome: str
+    nota: float
+
 app = FastAPI()
 
 #contador_id e alunos_df são variáveis GLOBAIS!
@@ -11,7 +15,7 @@ alunos_df = pd.DataFrame(
     {
         "id": [1,2,3],
         "nome": ["Jefferson", "Wladimir", "Fábio"],
-        "notas": [6.7, 8.3, 3.2]
+        "nota": [6.7, 8.3, 3.2]
     }
 )
 
@@ -20,28 +24,30 @@ alunos_df = pd.DataFrame(
     #se já existir atualizar nota
     #se não criar aluno
 @app.post("/alunos")
-def adicionar_aluno(nome: str, nota: float):
+def adicionar_aluno(aluno: Aluno):
     global alunos_df, contador_id
     #se já existir atualizar nota
-    if alunos_df[alunos_df["nome"]== nome]:
-        aluno_idx = alunos_df.index[alunos_df["nome"] == nome]
-        alunos_df.loc[aluno_idx, "nota"] = nota
+    if not alunos_df[alunos_df["nome"]== aluno.nome].empty:
+        aluno_idx = alunos_df.index[alunos_df["nome"] == aluno.nome]
+        alunos_df.loc[aluno_idx, "nota"] = aluno.nota
         return {
-            "mensagem": f"Aluno {nome} atualizado com sucesso! Nota {nota}"
+            "mensagem": f"Aluno {aluno.nome} atualizado com sucesso! Nota {aluno.nota}",
+            "aluno": alunos_df.loc[aluno_idx].to_dict(orient="records")[0]
         }
     
     #se não criar aluno
     else:
         novo_aluno = {
             "id": contador_id,
-            "nome": nome,
-            "nota": nota
+            "nome": aluno.nome,
+            "nota": aluno.nota
         }
         
         alunos_df = alunos_df._append(novo_aluno, ignore_index = True)
         contador_id = contador_id + 1
         return {
-            "mensagem": "Aluno criado com sucesso!"
+            "mensagem": "Aluno criado com sucesso!",
+            "aluno": novo_aluno
     }
 #get /alunos/{nome} -> retorna sua nota caso aluno exista
 #se não mensagem  dizendo que aluno não foi registrado
